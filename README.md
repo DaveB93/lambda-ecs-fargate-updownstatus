@@ -18,12 +18,23 @@ serverstatus does not require any authentication, it looks up your hardcoded clu
 
 Setup
 
-( This is a bit of a mess sorry, it's work in progress untill I have time to clean it up )
+( This is a bit of a mess sorry, it's work in progress until I have time to clean it up )
 
 
-This is personal preference here, but I found working with node / deploying this code a bit saner in a linux environment ( deveoping was nicer on windows  though. ).   I installed WSL2, then Ubuntu LTS.  Then used vs code in the folder I'd cloned to by typing `code .`  
+This is personal preference here, but I found working with node / deploying this code a bit saner in a linux environment ( developing was nicer on windows  though. ).   I installed WSL2, then Ubuntu LTS.  Then used vs code in the folder I'd cloned to by typing `code .`  
 
-You will need the aws cli set up ( or atleast the .config file)
+In order to not have an issue with having to run sudo when installing npm modules globally after installing npm I ran this: 
+`npm config set prefix ~/.npm`  then modified my .profile
+
+```
+# set PATH so it includes user's .npm/bin if it exists
+if [ -d "$HOME/.npm/bin" ] ; then
+    PATH="$HOME/.npm/bin:$PATH"
+fi
+```
+so that the files could be found
+
+You will need the aws cli set up ( or at least the .config file)
 
 ```
 npm install ts-node -g # If using JavaScript, enter 'npm install node -g' instead
@@ -33,7 +44,7 @@ cd src
 
 
 
-ugh. all of this could / should be in a cloud formation template, or that new language.
+ugh. all of this could / should be in a cloud formation template, or the CDK.
 
 in the AWS iam console, make a new iam policy that 
 (currently ) allows full access to Ecs
@@ -132,9 +143,9 @@ Plan
 Initially I'm just throwing this up on github so people can build off my work.  I will clean it up in the future so that it's more presentable 
 
 
-I'm new to node, and typescript / javascript coding, so don't use this an example of good code. comments and suggestions are welcome.  I wrote this in Node / typescript because the eventual plan in my head is to submit a pull request that incorporates this into https://github.com/rileydakota/valheim-ecs-fargate-cdk , and keeping the same language as was already there is probably preferred. That said, this code is prety slow. I feel like I'm doing something wrong that it takes over a second to get the public IP of an ecs task.   I'm seriously thinking about making a Java version of the status function atleast.
+I'm new to node, and typescript / javascript coding, so don't use this an example of good code. comments and suggestions are welcome.  I wrote this in Node / typescript because the eventual plan in my head is to submit a pull request that incorporates this into https://github.com/rileydakota/valheim-ecs-fargate-cdk , and keeping the same language as was already there is probably preferred. That said, this code is pretty slow. I feel like I'm doing something wrong that it takes over a second to get the public IP of an ecs task.   I'm seriously thinking about making a Java version of the status function at least.
 
-The origin of this code was primarlily git@github.com/awsdocs/aws-doc-sdk-examples/tree/master/javascriptv3/example_code/lambda.git
+The origin of this code was mostly git@github.com/awsdocs/aws-doc-sdk-examples/tree/master/javascriptv3/example_code/lambda.git
 
 The [preview version of the AWS SDK for JavaScript v3](https://github.com/aws/aws-sdk-js-v3) is available. 
 
