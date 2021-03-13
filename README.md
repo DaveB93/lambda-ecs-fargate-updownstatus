@@ -107,19 +107,9 @@ stop the server
 the status function doesn't require any specific input. 
 
 
-After you've got those up, you will need to go to aws api gateway, and hook up an api for your functions.  I followed this tutorial.
+## Server Auto Shutdown
 
-https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/using-lambda-functions.html
-
-I have this tutorial open in my tabs as well.  https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html
-
-
-TODO: ( this can totally be automated as well )
-
-
-To get the server to shut down automatically ( in case you forget to turn it off ) I recommend using application autoscaling see my comment here on how to set that up
-
-https://github.com/rileydakota/valheim-ecs-fargate-cdk/issues/8#issuecomment-791126634
+To get the server to shut down automatically ( in case you forget to turn it off ) I recommend using application autoscaling.  see my comment [here](https://github.com/rileydakota/valheim-ecs-fargate-cdk/issues/8#issuecomment-791126634) on how to set that up
 
 
 ## Plan
