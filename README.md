@@ -5,7 +5,7 @@ AWS Lambda scripts for adjusting desired capacity of an ECS Fargate service and 
 This code was initially created to start/stop and see the status of a Valheim server created with code from this repository https://github.com/rileydakota/valheim-ecs-fargate-cdk 
 
 
-What it does
+## What it does
 
 There are 2 javascriptv3 node scripts here
 * startstopserver.ts
@@ -16,9 +16,12 @@ startstop takes a desiredCount and a key.  Your key matches the hardcoded key, t
 serverstatus does not require any authentication, it looks up your hardcoded cluster / service, and working from that figures out if it's up, and its public IP address.
 
 
-Setup
+## Setup
 
-( This is a bit of a mess sorry, it's work in progress until I have time to clean it up )
+Q: Can't I just drop the serverstatus.ts and startstopservers.ts into the aws lambda console? what's with all this complicated setup?
+A: No, due to the fact I'm using the AWS Javascript v3 api, this requires you to bundle all the required scripts with your code.  This is done using the CDK / esbuild.
+
+( This is my first CDK / node.js project. I'm sorry if it's a bit of a mess, I'm still getting used to it. Suggestions are welcome.)
 
 
 This is personal preference here, but I found working with node / deploying this code a bit saner in a linux environment ( developing was nicer on windows  though. ).   I installed WSL2, then Ubuntu LTS.  Then used vs code in the folder I'd cloned to by typing `code .`  
@@ -34,67 +37,43 @@ fi
 ```
 so that the files could be found
 
-You will need the aws cli set up ( or at least the .config file)
+You will need the aws cli set up ( or at least the .config file), if you don't have esbuild setup, then you will need docker, and you will need to have docker shared with your WSL2
 
 ```
-npm install ts-node -g # If using JavaScript, enter 'npm install node -g' instead
 npm install
-
-cd src
-
-
-
-ugh. all of this could / should be in a cloud formation template, or the CDK.
-
-in the AWS iam console, make a new iam policy that 
-(currently ) allows full access to Ecs
-TODO: figure out minimum required permissions and put a policy document here. Or create it with this script
-make a note of the ARN for the policy and fill it in for lambda-role-setup.ts
-
-{
-  Version: "2012-10-17",
-  Statement: [
-    {
-      Resource: "*",
-      Effect: "Allow",
-      Action: "ecs:*",
-    },
-  ],
-};
-
-
-modify lambda-role-setup.ts to set the region of your cluster and the NEW_ROLENAME of your lambda role 
-
-( todo:  Can I make a conf file and just have someone do this once? )
-
-ts-node lambda-role-setup.ts
-
-Modify all the rest of the ts-node-*-setup.ts files
-* Make sure you are consistent with all the names
-* You specifically need to change:
-    * CHANGEME_BUCKET_NAME
-    * CHANGEME_LAMBDA_ROLE
-    * CHANGEME_ECS_POLICY_ARN
-    * CHANGEME_LAMBDA_ROLE_ARN  ( gotten after running lambda-role-setup.ts)
-
-* You probably want to change
-    * region 
-
-
-* Modify re-upload*.sh if you're planning to try to iterate on the scripts
-
-* modify serverstatus.ts and startstopserver.ts to have the correct region and have your ecs cluster / service name
-    * CHANGEME_SERVICES_ARN
-    * CHANGEME_CLUSTER_ARN
-    * CHANGEME_PASSWORD
-
-you need to build the node scripts once with re-upload-startstop etc, but it would fail uploading the first time uploading because the function doesn't exist. ( chicken-egg problem.)
-ts-node lambda-startstop-function.ts and ts-node lambda-status-function should be run at the end.
-
 ```
 
-next you need to go to the lambda console.  test your functions work with  this input for the startstop function
+configure your settings to point to your ECS stack [here](bin/lambda-ecs-fargate-updownstatus.ts)
 
+```
+npx cdk deploy
+```
+
+## Using the code
+
+After you deploy it you should get the URL of the Application Gateteway.  You can start the server by going to the server URL  and appending 
+
+```
+SERVERURL/startstop?key=PASSWORD
+```
+
+You can go to the ECS Cluster and see the desired count has changed to 1, and in about 15 seconds or so your service should be running. 
+
+You can stop the server by doing the same, but setting the desiredCount=0
+
+```
+SERVERURL/startstop?key=PASSWORD&desiredCount=0
+```
+
+you can see if the server is running and it's IP by going to 
+
+```
+SERVERURL/serverstatus
+```
+
+
+## Optional if you're iterating on the script
+next you need to go to the lambda console.  test your functions work with  this input for the startstop function
 ```
 {
   "body": "eyJ0ZXN0IjoiYm9keSJ9",
@@ -128,7 +107,12 @@ stop the server
 the status function doesn't require any specific input. 
 
 
-After you've got those up, you will need to go to aws api gateway, and hook up an api for your functions.  I followed this tutorial. https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html
+After you've got those up, you will need to go to aws api gateway, and hook up an api for your functions.  I followed this tutorial.
+
+https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/using-lambda-functions.html
+
+I have this tutorial open in my tabs as well.  https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html
+
 
 TODO: ( this can totally be automated as well )
 
@@ -138,7 +122,7 @@ To get the server to shut down automatically ( in case you forget to turn it off
 https://github.com/rileydakota/valheim-ecs-fargate-cdk/issues/8#issuecomment-791126634
 
 
-Plan
+## Plan
 
 Initially I'm just throwing this up on github so people can build off my work.  I will clean it up in the future so that it's more presentable 
 
@@ -153,9 +137,7 @@ The [AWS documentation for this tutorial](https://docs.aws.amazon.com/sdk-for-ja
 
 
 
-Security
-
-TODO: This currently makes an s3bucket configured as a website, it does not have to be. 
+## Security
 
 This code has none / very little security.  Make sure your IAM roles are locked down a bit.  I feel like the direction to go with this is to figure out how Cognito works / create minor IAM roles for your friends you want to be able to start the server / or implement basic-auth.
 
