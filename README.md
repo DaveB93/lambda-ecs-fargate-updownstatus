@@ -5,6 +5,11 @@ AWS Lambda scripts for adjusting desired capacity of an ECS Fargate service and 
 This code was initially created to start/stop and see the status of a Valheim server created with code from this repository https://github.com/rileydakota/valheim-ecs-fargate-cdk 
 
 
+
+# I broke it sorry
+
+I realized I copied from my old dir to my working dir and not the other way around, I need to recover the files, but have some things to do, so it wont be fixed for a few hours sorry. 
+
 ## What it does
 
 There are 2 javascriptv3 node scripts here
