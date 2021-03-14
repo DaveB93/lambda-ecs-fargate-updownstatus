@@ -5,18 +5,13 @@ AWS Lambda scripts for adjusting desired capacity of an ECS Fargate service and 
 This code was initially created to start/stop and see the status of a Valheim server created with code from this repository https://github.com/rileydakota/valheim-ecs-fargate-cdk 
 
 
-
-# I broke it sorry
-
-I realized I copied from my old dir to my working dir and not the other way around, I need to recover the files, but have some things to do, so it wont be fixed for a few hours sorry. 
-
 ## What it does
 
 There are 2 javascriptv3 node scripts here
 * startstopserver.ts
 * serverstatus.ts
 
-startstop takes a desiredCount and a key.  Your key matches the hardcoded key, then it adjusts the desired capacity of the ECS service. 
+startstop takes a desiredCount and a key.  If the key matches the key in the environment variable, then it adjusts the desired capacity of the ECS service. 
 
 serverstatus does not require any authentication, it looks up your hardcoded cluster / service, and working from that figures out if it's up, and its public IP address.
 
@@ -75,6 +70,13 @@ you can see if the server is running and it's IP by going to
 ```
 SERVERURL/serverstatus
 ```
+
+* `npm run build`   compile typescript to js
+* `npm run watch`   watch for changes and compile
+* `npm run test`    perform the jest unit tests
+* `cdk deploy`      deploy this stack to your default AWS account/region
+* `cdk diff`        compare deployed stack with current state
+* `cdk synth`       emits the synthesized CloudFormation template
 
 
 ## Optional if you're iterating on the script

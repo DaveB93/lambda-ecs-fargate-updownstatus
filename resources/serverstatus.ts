@@ -19,14 +19,12 @@ const { ECSClient, ListServicesCommand, DescribeServicesCommand, ListTasksComman
 const { EC2Client, DescribeNetworkInterfacesCommand } = require('@aws-sdk/client-ec2');
 
 //Set the AWS Region
-const REGION = "us-west-2"; //e.g. "us-east-1"
-const SERVICE_ARN = "CHANGEME_SERVICES_ARN";  // arn:aws:ecs:us-west-2:######:service/ValheimServerAwsCdkStack-fargateCluster7F3D820B-eccKqMVSXj5m/ValheimServerAwsCdkStack-valheimService6CC6232D-ojRS5VVVNwQL
-const CLUSTER_ARN = "CHANGEME_CLUSTER_ARN"; // arn:aws:ecs:us-west-2:######:cluster/ValheimServerAwsCdkStack-fargateCluster7F3D820B-eccKqMVSXj5m
+const REGION = process.env.REGION;
+const SERVICE_ARN = process.env.SERVICE_ARN;
+const CLUSTER_ARN = process.env.CLUSTER_ARN;
 
 const client = new ECSClient({ region: REGION });
 const ec2Client = new EC2Client({ region: REGION });
-
-
 
 exports.handler = async (event, context, callback) => {
 
@@ -34,7 +32,14 @@ exports.handler = async (event, context, callback) => {
   var statusResults = await getIPFunction();
   console.log("status results: " + JSON.stringify(statusResults));
 
-  callback(null, statusResults);
+  let response = {
+    statusCode: 200,
+    headers: {
+    },
+    body: JSON.stringify(statusResults)
+  };
+
+  callback(null, response);
 };
 
 
@@ -55,7 +60,6 @@ async function getIPFunction() {
     };
     const listTasksCommand = new ListTasksCommand(ListTasksParams);
 
-    //const listTasksPromise = 
     const listTasks = await client.send(listTasksCommand);
     console.log(listTasks);
 
