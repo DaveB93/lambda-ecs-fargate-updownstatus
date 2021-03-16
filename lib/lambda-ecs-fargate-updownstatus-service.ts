@@ -6,15 +6,15 @@ import { Policy, PolicyStatement, PolicyProps, Effect } from "@aws-cdk/aws-iam"
 import { Stack, Arn } from "@aws-cdk/core";
 import { EndpointType } from "@aws-cdk/aws-apigateway";
 
-export interface WidgetServiceOptions {
+export interface LambdaEcsFargateUpDownServiceOptions {
   region: string;
   serviceArn: Arn;
   clusterArn: Arn;
   startStopPassword: string;
 }
 
-export class WidgetService extends core.Construct {
-  constructor(scope: core.Construct, id: string, props: WidgetServiceOptions) {
+export class LambdaEcsFargateUpDownService extends core.Construct {
+  constructor(scope: core.Construct, id: string, props: LambdaEcsFargateUpDownServiceOptions) {
     super(scope, id);
 
     const serverStatusHandler = new lambdanodejs.NodejsFunction(this, "serverStatus", {
@@ -57,7 +57,7 @@ export class WidgetService extends core.Construct {
         REGION: props.region,
         SERVICE_NAME: props.serviceArn as string,
         CLUSTER_ARN: props.clusterArn as string,
-        PASSWORD: props.startStopPassword
+        PASSWORD: props.startStopPassword,
       }
     });
     const ecsStartStopPolicy = new Policy(this, "ecsStartStopPolicy", {
